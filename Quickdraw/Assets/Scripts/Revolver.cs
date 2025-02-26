@@ -12,6 +12,17 @@ public class Revolver : MonoBehaviour
         line = GetComponent<LineRenderer>();
     }
 
+    public void Select()
+    {
+        Debug.Log("Select");
+        // Disable controller visual and lock grip
+    }
+    
+    public void Deselect()
+    {
+        Debug.Log("Deselect");
+    }
+
     public void Fire()
     {
         Debug.Log("Bang");
