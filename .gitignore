@@ -77,3 +77,7 @@ crashlytics-build.properties
 /TP1/Logs
 TP1/.vsconfig
 /Tp_Son
+Quickdraw/Packages/packages-lock.json
+Quickdraw/ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json
+Quickdraw/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
+Quickdraw/ProjectSettings/ProjectVersion.txt
