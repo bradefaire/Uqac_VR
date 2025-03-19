@@ -4,12 +4,14 @@ public class Revolver : MonoBehaviour
 {
     [SerializeField] private Transform muzzle;
     [SerializeField] private LayerMask mask;
+    private CsvSaver csvSaver;
 
     private LineRenderer line;
     
     private void Start()
     {
         line = GetComponent<LineRenderer>();
+        csvSaver = GetComponent<CsvSaver>();
     }
 
     public void Select()
@@ -32,7 +34,14 @@ public class Revolver : MonoBehaviour
         if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
         {
             line.startColor = line.endColor = Color.green;
-            Debug.Log("Hit ! Distance: " + Vector3.Distance(hit.transform.position, hit.point));
+            Vector3 impactPosition = hit.point;
+            Vector3 targetPosition = hit.transform.position;
+            float distance = Vector3.Distance(impactPosition, targetPosition);
+            Debug.Log("Hit ! Distance: " + distance);
+            csvSaver.SaveTargetShotToCsv(
+                distance,
+                Vector3.SignedAngle(impactPosition, targetPosition, Vector3.right)
+            );
         }
         else
         {
