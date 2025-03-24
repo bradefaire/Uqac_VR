@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Revolver : MonoBehaviour
@@ -9,6 +11,8 @@ public class Revolver : MonoBehaviour
     private bool showTrail = false;
     private CsvSaver csvSaver;
     private LineRenderer line;
+    private int shots;
+    private List<float> impactDistances;
 
     public AudioClip SoundMiss;
     public AudioClip SoundHit;
@@ -19,17 +23,23 @@ public class Revolver : MonoBehaviour
     {
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
+        impactDistances = new List<float>();
         audioSource = GetComponent<AudioSource>();
     }
 
     public void Select()
     {
+        shots = 0;
         Debug.Log("Select");
     }
     
     public void Deselect()
     {
-        Debug.Log("Deselect");
+        Debug.Log("Deselect");      
+        csvSaver.SaveTargetShotToCsv(
+            impactDistances.Count > 0 ? impactDistances.Average() : 0,
+            impactDistances.Count > 0 ? ComputeStandardDeviation(impactDistances) : 0
+        );
     }
 
     public void Fire()
@@ -41,41 +51,47 @@ public class Revolver : MonoBehaviour
         }
 
         RaycastHit2D hit = Physics2D.GetRayIntersection(new Ray(muzzle.position, muzzle.forward), 100f, mask);
-        if(hit)
         // if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
+        if (hit)
         {
             line.startColor = line.endColor = Color.green;
             Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
+            float targetRadius = hit.collider.bounds.extents.magnitude;
             float distance = Vector3.Distance(impactPosition, targetPosition);
-            audioSource.clip = SoundHit;
-
-            Target t = hit.transform.GetComponent<Target>();
-            t.SpawnImpact(impactPosition);
-            
+            float normalizedDistance = distance / targetRadius;
+            Debug.Log("Target radius : " + targetRadius);
+            impactDistances.Add(normalizedDistance);
+            //Debug.Log("Hit ! Distance : " + normalizedDistance);
+            Debug.Log("Raw distance : " + distance);
+            shots++; 
             Debug.Log("Hit ! Distance: " + distance);
-
             csvSaver.SaveTargetShotToCsv(
                 distance,
                 Vector3.SignedAngle(impactPosition, targetPosition, Vector3.right)
             );
+
+            audioSource.clip = SoundHit;
+
+            Target t = hit.transform.GetComponent<Target>();
+            t.SpawnImpact(impactPosition);
         }
         else
         {
             audioSource.clip = SoundMiss;
             line.startColor = line.endColor = Color.red;
+            Debug.Log("Miss !");
         }
         
         audioSource.Play();
     }
-    
-    public void ToggleTrails()
+
+    private float ComputeStandardDeviation(List<float> values)
     {
-        showTrail = !showTrail;
-    }
-    
-    public void ToggleSight()
-    {
-        holoSight.SetActive(!holoSight.activeSelf);
+        if (values.Count == 0) return 0;
+
+        float average = values.Average();
+        float sumOfSquaresOfDifferences = values.Select(val => (val - average) * (val - average)).Sum();
+        return Mathf.Sqrt(sumOfSquaresOfDifferences / values.Count);
     }
 }

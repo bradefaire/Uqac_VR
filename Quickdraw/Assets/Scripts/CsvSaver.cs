@@ -14,7 +14,7 @@ public class CsvSaver : MonoBehaviour
         if (!File.Exists(path))
         {
             writer = new StreamWriter(path);
-            writer.WriteLine("radius, angle");
+            writer.WriteLine("mean, deviation");
         }
         else
         {
