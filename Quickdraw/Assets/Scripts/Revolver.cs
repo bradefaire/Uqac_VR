@@ -3,9 +3,11 @@ using UnityEngine;
 public class Revolver : MonoBehaviour
 {
     [SerializeField] private Transform muzzle;
+    [SerializeField] private GameObject holoSight;
     [SerializeField] private LayerMask mask;
+    [SerializeField] public bool showTrail = false;
+    
     private CsvSaver csvSaver;
-
     private LineRenderer line;
     
     private void Start()
@@ -17,7 +19,6 @@ public class Revolver : MonoBehaviour
     public void Select()
     {
         Debug.Log("Select");
-        // Disable controller visual and lock grip
     }
     
     public void Deselect()
@@ -27,16 +28,22 @@ public class Revolver : MonoBehaviour
 
     public void Fire()
     {
-        Debug.Log("Bang");
-        
-        line.SetPosition(0, muzzle.position);
-        line.SetPosition(1, muzzle.position + muzzle.forward * 100f);
+        if (showTrail)
+        {
+            line.SetPosition(0, muzzle.position);
+            line.SetPosition(1, muzzle.position + muzzle.forward * 100f);
+        }
+
         if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
         {
             line.startColor = line.endColor = Color.green;
             Vector3 impactPosition = hit.point;
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
+
+            Target t = hit.transform.GetComponent<Target>();
+            t.SpawnImpact(impactPosition);
+            
             Debug.Log("Hit ! Distance: " + distance);
             csvSaver.SaveTargetShotToCsv(
                 distance,
@@ -46,7 +53,16 @@ public class Revolver : MonoBehaviour
         else
         {
             line.startColor = line.endColor = Color.red;
-            Debug.Log("Miss !");
         }
+    }
+    
+    public void ToggleTrails()
+    {
+        showTrail = !showTrail;
+    }
+    
+    public void ToggleSight()
+    {
+        holoSight.SetActive(!holoSight.activeSelf);
     }
 }
