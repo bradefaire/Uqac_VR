@@ -11,15 +11,10 @@ public class Revolver : MonoBehaviour
     private CsvSaver csvSaver;
     private LineRenderer line;
     private int shots;
-    private List<float> impactDistances;
+    private List<float> impactsPrecision;
     private float targetRadius;
     
     private bool showTrail = false;
-    private CsvSaver csvSaver;
-    private LineRenderer line;
-    private int shots;
-    private List<float> impactDistances;
-    private float targetRadius;
 
     public AudioClip SoundMiss;
     public AudioClip SoundHit;
@@ -30,8 +25,8 @@ public class Revolver : MonoBehaviour
     {
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
-        impactDistances = new List<float>();
-        targetRadius = target.GetComponent<Collider>().bounds.extents.magnitude;
+        impactsPrecision = new List<float>();
+        targetRadius = target.GetComponent<CircleCollider2D>().radius * target.transform.localScale.x;
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -43,11 +38,14 @@ public class Revolver : MonoBehaviour
     
     public void Deselect()
     {
-        Debug.Log("Deselect");      
-        csvSaver.SaveTargetShotToCsv(
-            impactDistances.Count > 0 ? impactDistances.Average() : 0,
-            impactDistances.Count > 0 ? ComputeStandardDeviation(impactDistances) : 0
-        );
+        Debug.Log("Deselect");
+        if (impactsPrecision.Count > 0)
+        {
+            csvSaver.SaveTargetShotToCsv(
+                impactsPrecision.Average(),
+                ComputeStandardDeviation(impactsPrecision)
+            );
+        }
     }
 
     public void Fire()
@@ -66,14 +64,9 @@ public class Revolver : MonoBehaviour
             Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
-            float normalizedDistance = distance / targetRadius;
-            impactDistances.Add(normalizedDistance);
-            shots++; 
-            Debug.Log("Hit ! Distance: " + distance);
-            csvSaver.SaveTargetShotToCsv(
-                distance,
-                Vector3.SignedAngle(impactPosition, targetPosition, Vector3.right)
-            );
+            float normalizedDistance = 1 - distance / targetRadius;
+            impactsPrecision.Add(normalizedDistance);
+            shots++;
 
             audioSource.clip = SoundHit;
 
@@ -87,6 +80,15 @@ public class Revolver : MonoBehaviour
         }
         
         audioSource.Play();
+    }
+    public void ToggleTrails()
+    {
+        showTrail = !showTrail;
+    }
+    
+    public void ToggleSight()
+    {
+        holoSight.SetActive(!holoSight.activeSelf);
     }
 
     private float ComputeStandardDeviation(List<float> values)
