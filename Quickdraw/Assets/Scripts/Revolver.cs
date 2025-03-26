@@ -8,6 +8,11 @@ public class Revolver : MonoBehaviour
     [SerializeField] private Transform muzzle;
     [SerializeField] private GameObject holoSight;
     [SerializeField] private LayerMask mask;
+    private CsvSaver csvSaver;
+    private LineRenderer line;
+    private int shots;
+    private List<float> impactDistances;
+    private float targetRadius;
     
     private bool showTrail = false;
     private CsvSaver csvSaver;
@@ -79,7 +84,6 @@ public class Revolver : MonoBehaviour
         {
             audioSource.clip = SoundMiss;
             line.startColor = line.endColor = Color.red;
-            Debug.Log("Miss !");
         }
         
         audioSource.Play();
