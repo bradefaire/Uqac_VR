@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +9,12 @@ public class SceneController : MonoBehaviour
     [SerializeField] private Timer timer;
 
     [SerializeField] private Slider distanceSlider;
+    [SerializeField] private TMP_Text distanceText;
     
     public void SetTargetDistance(float distance)
     {
         target.SetDistance(distance);
+        distanceText.text = distance.ToString();
     }
     
     public void ClearImpacts()

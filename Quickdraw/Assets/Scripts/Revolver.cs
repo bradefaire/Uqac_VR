@@ -1,13 +1,12 @@
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class Revolver : MonoBehaviour
 {
     [SerializeField] private Transform muzzle;
     [SerializeField] private GameObject holoSight;
     [SerializeField] private LayerMask mask;
-    [SerializeField] public bool showTrail = false;
     
+    private bool showTrail = false;
     private CsvSaver csvSaver;
     private LineRenderer line;
 
@@ -21,7 +20,6 @@ public class Revolver : MonoBehaviour
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
         audioSource = GetComponent<AudioSource>();
-
     }
 
     public void Select()
@@ -42,10 +40,12 @@ public class Revolver : MonoBehaviour
             line.SetPosition(1, muzzle.position + muzzle.forward * 100f);
         }
 
-        if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
+        RaycastHit2D hit = Physics2D.GetRayIntersection(new Ray(muzzle.position, muzzle.forward), 100f, mask);
+        if(hit)
+        // if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
         {
             line.startColor = line.endColor = Color.green;
-            Vector3 impactPosition = hit.point;
+            Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
             audioSource.clip = SoundHit;
@@ -65,6 +65,8 @@ public class Revolver : MonoBehaviour
             audioSource.clip = SoundMiss;
             line.startColor = line.endColor = Color.red;
         }
+        
+        audioSource.Play();
     }
     
     public void ToggleTrails()
