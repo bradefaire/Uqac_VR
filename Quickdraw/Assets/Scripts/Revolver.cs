@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Revolver : MonoBehaviour
 {
+    [SerializeField] private GameObject target;
     [SerializeField] private Transform muzzle;
     [SerializeField] private GameObject holoSight;
     [SerializeField] private LayerMask mask;
@@ -13,6 +14,7 @@ public class Revolver : MonoBehaviour
     private LineRenderer line;
     private int shots;
     private List<float> impactDistances;
+    private float targetRadius;
 
     public AudioClip SoundMiss;
     public AudioClip SoundHit;
@@ -24,6 +26,7 @@ public class Revolver : MonoBehaviour
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
         impactDistances = new List<float>();
+        targetRadius = target.GetComponent<Collider>().bounds.extents.magnitude;
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -57,13 +60,9 @@ public class Revolver : MonoBehaviour
             line.startColor = line.endColor = Color.green;
             Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
-            float targetRadius = hit.collider.bounds.extents.magnitude;
             float distance = Vector3.Distance(impactPosition, targetPosition);
             float normalizedDistance = distance / targetRadius;
-            Debug.Log("Target radius : " + targetRadius);
             impactDistances.Add(normalizedDistance);
-            //Debug.Log("Hit ! Distance : " + normalizedDistance);
-            Debug.Log("Raw distance : " + distance);
             shots++; 
             Debug.Log("Hit ! Distance: " + distance);
             csvSaver.SaveTargetShotToCsv(
@@ -87,11 +86,11 @@ public class Revolver : MonoBehaviour
     }
 
     private float ComputeStandardDeviation(List<float> values)
-    {
-        if (values.Count == 0) return 0;
-
-        float average = values.Average();
-        float sumOfSquaresOfDifferences = values.Select(val => (val - average) * (val - average)).Sum();
-        return Mathf.Sqrt(sumOfSquaresOfDifferences / values.Count);
-    }
+        {
+            if (values.Count == 0) return 0;
+    
+            float average = values.Average();
+            float squareDifferencesSum = values.Select(val => (val - average) * (val - average)).Sum();
+            return Mathf.Sqrt(squareDifferencesSum / values.Count);
+        }
 }
