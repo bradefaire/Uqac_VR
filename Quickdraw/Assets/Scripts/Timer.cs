@@ -9,8 +9,6 @@ public class Timer : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         startTimer = Random.Range(6, 15);
-
-        StartCoroutine(CountDown());
     }
 
     private IEnumerator CountDown()
