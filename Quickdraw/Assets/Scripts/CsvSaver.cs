@@ -22,11 +22,11 @@ public class CsvSaver : MonoBehaviour
         }
     }
 
-    public void SaveTargetShotToCsv(float radius, float angle)
+    public void SaveTargetShotToCsv(float mean, float deviation)
     {
-        string formattedRadius = radius.ToString(CultureInfo.InvariantCulture);
-        string formattedAngle = angle.ToString(CultureInfo.InvariantCulture);
-        writer.WriteLine(formattedRadius + "," + formattedAngle);
+        string formattedMean = mean.ToString(CultureInfo.InvariantCulture);
+        string formattedDeviation = deviation.ToString(CultureInfo.InvariantCulture);
+        writer.WriteLine(formattedMean + "," + formattedDeviation);
     }
 
     void OnDestroy()

@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class Revolver : MonoBehaviour
 {
+    [SerializeField] private GameObject target;
     [SerializeField] private Transform muzzle;
     [SerializeField] private LayerMask mask;
     private CsvSaver csvSaver;
     private LineRenderer line;
     private int shots;
     private List<float> impactDistances;
+    private float targetRadius;
     
     private void Start()
     {
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
         impactDistances = new List<float>();
+        targetRadius = target.GetComponent<Collider>().bounds.extents.magnitude;
     }
 
     public void Select()
@@ -43,13 +46,9 @@ public class Revolver : MonoBehaviour
             line.startColor = line.endColor = Color.green;
             Vector3 impactPosition = hit.point;
             Vector3 targetPosition = hit.transform.position;
-            float targetRadius = hit.collider.bounds.extents.magnitude;
             float distance = Vector3.Distance(impactPosition, targetPosition);
             float normalizedDistance = distance / targetRadius;
-            Debug.Log("Target radius : " + targetRadius);
             impactDistances.Add(normalizedDistance);
-            //Debug.Log("Hit ! Distance : " + normalizedDistance);
-            Debug.Log("Raw distance : " + distance);
             shots++; 
         }
         else
@@ -63,7 +62,7 @@ public class Revolver : MonoBehaviour
             if (values.Count == 0) return 0;
     
             float average = values.Average();
-            float sumOfSquaresOfDifferences = values.Select(val => (val - average) * (val - average)).Sum();
-            return Mathf.Sqrt(sumOfSquaresOfDifferences / values.Count);
+            float squareDifferencesSum = values.Select(val => (val - average) * (val - average)).Sum();
+            return Mathf.Sqrt(squareDifferencesSum / values.Count);
         }
 }
