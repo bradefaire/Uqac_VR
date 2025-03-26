@@ -48,7 +48,7 @@ public class Revolver : MonoBehaviour
             Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
-            audioSource.clip = SoundHit;
+            audioSource.PlayOneShot(SoundHit);
 
             Target t = hit.transform.GetComponent<Target>();
             t.SpawnImpact(impactPosition);
@@ -62,11 +62,11 @@ public class Revolver : MonoBehaviour
         }
         else
         {
-            audioSource.clip = SoundMiss;
+            audioSource.PlayOneShot(SoundMiss);
             line.startColor = line.endColor = Color.red;
         }
         
-        audioSource.Play();
+        
     }
     
     public void ToggleTrails()
