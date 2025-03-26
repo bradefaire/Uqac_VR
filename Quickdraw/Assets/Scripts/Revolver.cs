@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class Revolver : MonoBehaviour
 {
     [SerializeField] private GameObject target;
+    [SerializeField] private TextMeshProUGUI precisionUIText;
     [SerializeField] private Transform muzzle;
     [SerializeField] private GameObject holoSight;
     [SerializeField] private LayerMask mask;
@@ -13,12 +15,9 @@ public class Revolver : MonoBehaviour
     private int shots;
     private List<float> impactsPrecision;
     private float targetRadius;
-    
     private bool showTrail = false;
-
     public AudioClip SoundMiss;
     public AudioClip SoundHit;
-
     private AudioSource audioSource;
 
     private void Start()
@@ -57,7 +56,6 @@ public class Revolver : MonoBehaviour
         }
 
         RaycastHit2D hit = Physics2D.GetRayIntersection(new Ray(muzzle.position, muzzle.forward), 100f, mask);
-        // if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
         if (hit)
         {
             line.startColor = line.endColor = Color.green;
@@ -67,6 +65,7 @@ public class Revolver : MonoBehaviour
             float normalizedDistance = 1 - distance / targetRadius;
             impactsPrecision.Add(normalizedDistance);
             shots++;
+            precisionUIText.text = $"{Mathf.RoundToInt(normalizedDistance * 100f)} %";
 
             audioSource.PlayOneShot(SoundHit);
 
