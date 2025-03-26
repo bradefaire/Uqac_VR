@@ -1,14 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Revolver : MonoBehaviour
 {
+    [SerializeField] private GameObject target;
     [SerializeField] private Transform muzzle;
     [SerializeField] private GameObject holoSight;
     [SerializeField] private LayerMask mask;
-    
-    private bool showTrail = false;
     private CsvSaver csvSaver;
     private LineRenderer line;
+    private int shots;
+    private List<float> impactsPrecision;
+    private float targetRadius;
+    
+    private bool showTrail = false;
 
     public AudioClip SoundMiss;
     public AudioClip SoundHit;
@@ -19,17 +25,27 @@ public class Revolver : MonoBehaviour
     {
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
+        impactsPrecision = new List<float>();
+        targetRadius = target.GetComponent<CircleCollider2D>().radius * target.transform.localScale.x;
         audioSource = GetComponent<AudioSource>();
     }
 
     public void Select()
     {
+        shots = 0;
         Debug.Log("Select");
     }
     
     public void Deselect()
     {
         Debug.Log("Deselect");
+        if (impactsPrecision.Count > 0)
+        {
+            csvSaver.SaveTargetShotToCsv(
+                impactsPrecision.Average(),
+                ComputeStandardDeviation(impactsPrecision)
+            );
+        }
     }
 
     public void Fire()
@@ -41,24 +57,21 @@ public class Revolver : MonoBehaviour
         }
 
         RaycastHit2D hit = Physics2D.GetRayIntersection(new Ray(muzzle.position, muzzle.forward), 100f, mask);
-        if(hit)
         // if (Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, 100f, mask))
+        if (hit)
         {
             line.startColor = line.endColor = Color.green;
             Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
+            float normalizedDistance = 1 - distance / targetRadius;
+            impactsPrecision.Add(normalizedDistance);
+            shots++;
+
             audioSource.PlayOneShot(SoundHit);
 
             Target t = hit.transform.GetComponent<Target>();
             t.SpawnImpact(impactPosition);
-            
-            Debug.Log("Hit ! Distance: " + distance);
-
-            csvSaver.SaveTargetShotToCsv(
-                distance,
-                Vector3.SignedAngle(impactPosition, targetPosition, Vector3.right)
-            );
         }
         else
         {
@@ -68,7 +81,6 @@ public class Revolver : MonoBehaviour
         
         
     }
-    
     public void ToggleTrails()
     {
         showTrail = !showTrail;
@@ -78,4 +90,13 @@ public class Revolver : MonoBehaviour
     {
         holoSight.SetActive(!holoSight.activeSelf);
     }
+
+    private float ComputeStandardDeviation(List<float> values)
+        {
+            if (values.Count == 0) return 0;
+    
+            float average = values.Average();
+            float squareDifferencesSum = values.Select(val => (val - average) * (val - average)).Sum();
+            return Mathf.Sqrt(squareDifferencesSum / values.Count);
+        }
 }

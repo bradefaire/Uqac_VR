@@ -1851,6 +1851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f305252dba1830448e5e35e8e4daa8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 752973190}
   muzzle: {fileID: 763157705}
   holoSight: {fileID: 1739027039}
   mask:
