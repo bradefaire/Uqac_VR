@@ -5,6 +5,7 @@ public class SceneController : MonoBehaviour
 {
     [SerializeField] private Target target;
     [SerializeField] private Revolver revolver;
+    [SerializeField] private Timer timer;
 
     [SerializeField] private Slider distanceSlider;
     
@@ -26,5 +27,10 @@ public class SceneController : MonoBehaviour
     public void ToggleSight()
     {
         revolver.ToggleSight();
+    }
+
+    public void ReStart()
+    {
+        timer.StartTimer();
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Revolver : MonoBehaviour
 {
@@ -9,11 +10,18 @@ public class Revolver : MonoBehaviour
     
     private CsvSaver csvSaver;
     private LineRenderer line;
-    
+
+    public AudioClip SoundMiss;
+    public AudioClip SoundHit;
+
+    private AudioSource audioSource;
+
     private void Start()
     {
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
+        audioSource = GetComponent<AudioSource>();
+
     }
 
     public void Select()
@@ -40,11 +48,13 @@ public class Revolver : MonoBehaviour
             Vector3 impactPosition = hit.point;
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
+            audioSource.clip = SoundHit;
 
             Target t = hit.transform.GetComponent<Target>();
             t.SpawnImpact(impactPosition);
             
             Debug.Log("Hit ! Distance: " + distance);
+
             csvSaver.SaveTargetShotToCsv(
                 distance,
                 Vector3.SignedAngle(impactPosition, targetPosition, Vector3.right)
@@ -52,6 +62,7 @@ public class Revolver : MonoBehaviour
         }
         else
         {
+            audioSource.clip = SoundMiss;
             line.startColor = line.endColor = Color.red;
         }
     }

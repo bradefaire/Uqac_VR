@@ -51,6 +51,7 @@ ExportedObj/
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
+*.terrainlayer.meta
 
 # Unity3D generated file on crash reports
 sysinfo.txt
@@ -68,16 +69,11 @@ crashlytics-build.properties
 # Packed Addressables
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
-# Temporary auto-generated Android Assets
-/[Aa]ssets/[Ss]treamingAssets/aa.meta
-/[Aa]ssets/[Ss]treamingAssets/aa/*
-/TP1/Library
-/TP1/Temp
-/TP1/UserSettings
-/TP1/Logs
-TP1/.vsconfig
-/Tp_Son
 Quickdraw/Packages/packages-lock.json
 Quickdraw/ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json
 Quickdraw/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
 Quickdraw/ProjectSettings/ProjectVersion.txt
+/Quickdraw/Assets/_TerrainAutoUpgrade
+Quickdraw/Assets/_TerrainAutoUpgrade.meta
+Quickdraw/.vsconfig
+Quickdraw/Packages/packages-lock.json
