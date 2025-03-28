@@ -14,7 +14,7 @@ public class CsvSaver : MonoBehaviour
         if (!File.Exists(path))
         {
             writer = new StreamWriter(path);
-            writer.WriteLine("mean, deviation");
+            writer.WriteLine("mean reaction time, reaction time deviation, mean accuracy, accuracy deviation");
         }
         else
         {
@@ -22,11 +22,13 @@ public class CsvSaver : MonoBehaviour
         }
     }
 
-    public void SaveTargetShotToCsv(float mean, float deviation)
+    public void SaveTargetShotToCsv(float meanRT, float RTdeviation, float meanAccuracy, float accuracyDeviation)
     {
-        string formattedMean = mean.ToString(CultureInfo.InvariantCulture);
-        string formattedDeviation = deviation.ToString(CultureInfo.InvariantCulture);
-        writer.WriteLine(formattedMean + "," + formattedDeviation);
+        string formattedMeanRT = meanRT.ToString(CultureInfo.InvariantCulture);
+        string formattedRTdeviation = RTdeviation.ToString(CultureInfo.InvariantCulture);
+        string formattedMeanAccuracy = meanAccuracy.ToString(CultureInfo.InvariantCulture);
+        string formattedAccuracyDeviation = accuracyDeviation.ToString(CultureInfo.InvariantCulture);
+        writer.WriteLine(formattedMeanRT + "," + formattedRTdeviation + "," + formattedMeanAccuracy + "," + formattedAccuracyDeviation);
     }
 
     void OnDestroy()
