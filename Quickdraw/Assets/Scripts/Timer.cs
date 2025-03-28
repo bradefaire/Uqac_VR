@@ -3,18 +3,19 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
-    float startTimer;
+    float timerDuration;
+    float timerEndTime;
     private AudioSource audioSource;
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        startTimer = Random.Range(6, 15);
+        timerDuration = Random.Range(6, 15);
     }
 
     private IEnumerator CountDown()
     {
-
-        yield return new WaitForSeconds(startTimer);
+        yield return new WaitForSeconds(timerDuration);
+        timerEndTime = Time.time;
         audioSource.Play();
         yield return null;
     }
@@ -22,5 +23,12 @@ public class Timer : MonoBehaviour
     public void StartTimer()
     {
         StartCoroutine(CountDown());
+    }
+
+    public float GetTimerEndTime()
+    {
+        float endTime = timerEndTime;
+        timerEndTime = 0;
+        return endTime;
     }
 }
