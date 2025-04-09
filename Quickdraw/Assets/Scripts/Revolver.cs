@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class Revolver : MonoBehaviour
     private CsvSaver csvSaver;
     private LineRenderer line;
     private float targetRadius;
-    private bool showTrail = false;
+    private bool showTrail = true;
     public AudioClip SoundMiss;
     public AudioClip SoundHit;
     private AudioSource audioSource;
@@ -44,6 +45,8 @@ public class Revolver : MonoBehaviour
         {
             line.SetPosition(0, muzzle.position);
             line.SetPosition(1, muzzle.position + muzzle.forward * 100f);
+
+            StartCoroutine(HideTrail());
         }
 
         RaycastHit2D hit = Physics2D.GetRayIntersection(new Ray(muzzle.position, muzzle.forward), 100f, mask);
@@ -63,10 +66,6 @@ public class Revolver : MonoBehaviour
                 reactionTime = Time.time - timerEndTime;
                 timeUIText.text = $"{System.Math.Round(reactionTime, 2)} s";
             }
-            else
-            {
-                timeUIText.text = "";
-            }
             csvSaver.SaveTargetShotToCsv(
                 targetPosition.z,
                 reactionTime,
@@ -83,6 +82,13 @@ public class Revolver : MonoBehaviour
             audioSource.PlayOneShot(SoundMiss);
             line.startColor = line.endColor = Color.red;
         }
+    }
+
+    IEnumerator HideTrail()
+    {
+        yield return new WaitForSeconds(1f);
+        
+        line.startColor = line.endColor = Color.clear;
     }
 
     public void ToggleTrails()
