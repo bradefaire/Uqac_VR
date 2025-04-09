@@ -10,11 +10,11 @@ public class CsvSaver : MonoBehaviour
 
     void Start()
     {
-        path = Application.dataPath + "/data.csv";
+        path = Application.dataPath + "/" + System.DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss") + ".csv";
         if (!File.Exists(path))
         {
             writer = new StreamWriter(path);
-            writer.WriteLine("mean reaction time, reaction time deviation, mean accuracy, accuracy deviation");
+            writer.WriteLine("target distance, reaction time, accuracy");
         }
         else
         {
@@ -22,13 +22,12 @@ public class CsvSaver : MonoBehaviour
         }
     }
 
-    public void SaveTargetShotToCsv(float meanRT, float RTdeviation, float meanAccuracy, float accuracyDeviation)
+    public void SaveTargetShotToCsv(float targetDistance, float reactionTime, float accuracy)
     {
-        string formattedMeanRT = meanRT.ToString(CultureInfo.InvariantCulture);
-        string formattedRTdeviation = RTdeviation.ToString(CultureInfo.InvariantCulture);
-        string formattedMeanAccuracy = meanAccuracy.ToString(CultureInfo.InvariantCulture);
-        string formattedAccuracyDeviation = accuracyDeviation.ToString(CultureInfo.InvariantCulture);
-        writer.WriteLine(formattedMeanRT + "," + formattedRTdeviation + "," + formattedMeanAccuracy + "," + formattedAccuracyDeviation);
+        string formattedTargetDistance = targetDistance.ToString(CultureInfo.InvariantCulture);
+        string formattedReactionTime = reactionTime.ToString(CultureInfo.InvariantCulture);
+        string formattedAccuracy = accuracy.ToString(CultureInfo.InvariantCulture);
+        writer.WriteLine(formattedTargetDistance + "," + formattedReactionTime + "," + formattedAccuracy);
     }
 
     void OnDestroy()
