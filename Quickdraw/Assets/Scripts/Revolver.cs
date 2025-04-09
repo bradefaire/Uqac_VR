@@ -14,8 +14,6 @@ public class Revolver : MonoBehaviour
     [SerializeField] private LayerMask mask;
     private CsvSaver csvSaver;
     private LineRenderer line;
-    private List<float> impactsPrecision;
-    private List<float> reactionTimes;
     private float targetRadius;
     private bool showTrail = false;
     public AudioClip SoundMiss;
@@ -26,8 +24,6 @@ public class Revolver : MonoBehaviour
     {
         line = GetComponent<LineRenderer>();
         csvSaver = GetComponent<CsvSaver>();
-        impactsPrecision = new List<float>();
-        reactionTimes = new List<float>();
         targetRadius = target.GetComponent<CircleCollider2D>().radius * target.transform.localScale.x;
         audioSource = GetComponent<AudioSource>();
     }
@@ -40,15 +36,6 @@ public class Revolver : MonoBehaviour
     public void Deselect()
     {
         Debug.Log("Deselect");
-        if (impactsPrecision.Count > 0)
-        {
-            csvSaver.SaveTargetShotToCsv(
-                reactionTimes.Average(),
-                ComputeStandardDeviation(reactionTimes),
-                impactsPrecision.Average(),
-                ComputeStandardDeviation(impactsPrecision)
-            );
-        }
     }
 
     public void Fire()
@@ -67,16 +54,20 @@ public class Revolver : MonoBehaviour
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
             float normalizedDistance = 1 - distance / targetRadius;
-            impactsPrecision.Add(normalizedDistance);
             precisionUIText.text = $"{Mathf.RoundToInt(normalizedDistance * 100f)} %";
 
             float timerEndTime = timer.GetTimerEndTime();
+            float reactionTime = -1f;
             if (timerEndTime != 0)
             {
-                float reactionTime = Time.time - timerEndTime;
-                reactionTimes.Add(reactionTime);
+                reactionTime = Time.time - timerEndTime;
                 timeUIText.text = $"{System.Math.Round(reactionTime, 2)} s";
             }
+            csvSaver.SaveTargetShotToCsv(
+                targetPosition.z,
+                normalizedDistance,
+                reactionTime
+            );
 
             audioSource.PlayOneShot(SoundHit);
 
