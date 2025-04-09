@@ -63,10 +63,14 @@ public class Revolver : MonoBehaviour
                 reactionTime = Time.time - timerEndTime;
                 timeUIText.text = $"{System.Math.Round(reactionTime, 2)} s";
             }
+            else
+            {
+                timeUIText.text = "";
+            }
             csvSaver.SaveTargetShotToCsv(
                 targetPosition.z,
-                normalizedDistance,
-                reactionTime
+                reactionTime,
+                normalizedDistance
             );
 
             audioSource.PlayOneShot(SoundHit);
