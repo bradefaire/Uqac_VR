@@ -53,12 +53,17 @@ public class Revolver : MonoBehaviour
         if (hit)
         {
             line.startColor = line.endColor = Color.green;
+
+            // Récupération de la précision (distance au centre de la cible) :
+            //  • 0 % = bord de la cible
+            //  • 100 % = centre de la cible
             Vector3 impactPosition = new Vector3(hit.point.x, hit.point.y,  hit.transform.position.z);
             Vector3 targetPosition = hit.transform.position;
             float distance = Vector3.Distance(impactPosition, targetPosition);
             float normalizedDistance = 1 - distance / targetRadius;
             precisionUIText.text = $"{Mathf.RoundToInt(normalizedDistance * 100f)} %";
 
+            // Récupération du temps de réaction
             float timerEndTime = timer.GetTimerEndTime();
             float reactionTime = -1f;
             if (timerEndTime != 0)
@@ -66,6 +71,8 @@ public class Revolver : MonoBehaviour
                 reactionTime = Time.time - timerEndTime;
                 timeUIText.text = $"{System.Math.Round(reactionTime, 2)} s";
             }
+
+            // Enregistrement des données dans le CSV
             csvSaver.SaveTargetShotToCsv(
                 targetPosition.z,
                 reactionTime,
@@ -100,13 +107,4 @@ public class Revolver : MonoBehaviour
     {
         holoSight.SetActive(!holoSight.activeSelf);
     }
-
-    private float ComputeStandardDeviation(List<float> values)
-        {
-            if (values.Count == 0) return 0;
-    
-            float average = values.Average();
-            float squareDifferencesSum = values.Select(val => (val - average) * (val - average)).Sum();
-            return Mathf.Sqrt(squareDifferencesSum / values.Count);
-        }
 }
