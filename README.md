@@ -27,7 +27,7 @@ Resultats/
 ### Fonctionnement du projet
 
 1. **Jeu VR** :  
-   - L'utilisateur équipe différentes positions de départ via des **holsters imprimés en 3D** adaptés aux manettes Quest 3.
+   - L'utilisateur équipe différentes positions de départ via des **holsters imprimés en 3D** adaptés aux manettes Meta Quest 3.
    - À chaque session, il peut appuyer sur *Start* pour activer un **timer** et recevoir un **signal sonore** indiquant de tirer.
    - **Chaque tir** est enregistré avec :
      - le temps de réaction,
